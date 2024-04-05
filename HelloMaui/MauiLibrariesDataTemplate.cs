@@ -41,18 +41,21 @@ public class MauiLibrariesDataTemplate : DataTemplate
                 .Row(Row.Title)
                 .Column(Column.Text)
                 .Font(size: 18, bold: true)
+                .TextColor(Color.FromArgb("#262626"))
                 .TextTop()
                 .TextStart()
                 .Bind(Label.TextProperty,
                     getter: (LibraryModel model) => model.Title,
                     mode: BindingMode.OneWay),
 
-            new Label { MaxLines = 2, LineBreakMode = LineBreakMode.WordWrap }
+            new Label { MaxLines = 2, LineBreakMode = LineBreakMode.TailTruncation }
                 .Row(Row.Description)
                 .Column(Column.Text)
                 .Font(size: 12)
+                .TextColor(Color.FromArgb("#595959"))
                 .TextTop()
                 .TextStart()
+                .Paddings(right: 12)
                 .Bind(Label.TextProperty,
                     getter: (LibraryModel model) => model.Description,
                     mode: BindingMode.OneWay),

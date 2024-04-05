@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 
 namespace HelloMaui;
 
+
 public sealed class MainPage : BaseContentPage
 { 
     public MainPage() : base()
@@ -18,7 +19,9 @@ public sealed class MainPage : BaseContentPage
                 .ItemsSource(MauiLibraries)
                 .ItemTemplate(new MauiLibrariesDataTemplate())
                 .Invoke(collectionView => collectionView.SelectionChanged += HandleSelectionChanged)
+
         }
+        .Padding(12)
         .CenterVertical()
         .Invoke(refreshView => refreshView.Refreshing += HandleRefreshing);
     }
