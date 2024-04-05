@@ -41,7 +41,7 @@ public class MauiLibrariesDataTemplate : DataTemplate
                 .Row(Row.Title)
                 .Column(Column.Text)
                 .Font(size: 18, bold: true)
-                .TextColor(Color.FromArgb("#262626"))
+                .AppThemeColorBinding(Label.TextColorProperty, Color.FromArgb("#262626"), Color.FromArgb("#c9c9c9"))                
                 .TextTop()
                 .TextStart()
                 .Bind(Label.TextProperty,
@@ -52,7 +52,7 @@ public class MauiLibrariesDataTemplate : DataTemplate
                 .Row(Row.Description)
                 .Column(Column.Text)
                 .Font(size: 12)
-                .TextColor(Color.FromArgb("#595959"))
+                .AppThemeColorBinding(Label.TextColorProperty, Color.FromArgb("#595959"), Color.FromArgb("#b6b6b6"))                
                 .TextTop()
                 .TextStart()
                 .Paddings(right: 12)

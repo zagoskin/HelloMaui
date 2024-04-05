@@ -11,7 +11,7 @@ public sealed class MainPage : BaseContentPage
 { 
     public MainPage() : base()
     {
-        BackgroundColor = Colors.AliceBlue;
+        this.AppThemeColorBinding(BackgroundColorProperty, Colors.AliceBlue, Color.FromArgb("#282c2e")); 
 
         Content = new RefreshView
         {
