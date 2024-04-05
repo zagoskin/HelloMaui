@@ -3,7 +3,6 @@ using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Markup;
 using System.Collections.ObjectModel;
-using System.Runtime.Versioning;
 
 namespace HelloMaui;
 
@@ -13,27 +12,33 @@ public sealed class MainPage : BaseContentPage
     {
         BackgroundColor = Colors.AliceBlue;
 
-        Content = new CollectionView()
-            {
-                Header = new Label()
-                    .Text(".NET MAUI Libraries")
-                    .FontSize(32)
-                    .Paddings(0, 6, 0, 6)
-                    .Center()
-                    .TextCenter(),
+        Content = new RefreshView
+        {
+            Content = new MainPageCollection()
+                .ItemsSource(MauiLibraries)
+                .ItemTemplate(new MauiLibrariesDataTemplate())
+                .Invoke(collectionView => collectionView.SelectionChanged += HandleSelectionChanged)
+        }
+        .CenterVertical()
+        .Invoke(refreshView => refreshView.Refreshing += HandleRefreshing);
+    }
 
-                Footer = new Label()
-                    .Text(".NET MAUI: From Zero to Hero")
-                    .FontSize(10)
-                    .Paddings(left: 8)
-                    .Center()
-                    .TextCenter(),
+    private async void HandleRefreshing(object? sender, EventArgs e)
+    {
+        Guard.Against.Null(sender);
 
-                SelectionMode = SelectionMode.Single,
-            }
-            .ItemsSource(MauiLibraries)
-            .ItemTemplate(new MauiLibrariesDataTemplate())
-            .Invoke(collectionView => collectionView.SelectionChanged += HandleSelectionChanged);
+        var refreshView = (RefreshView)sender;
+
+        await Task.Delay(TimeSpan.FromSeconds(2));
+
+        MauiLibraries.Add(new LibraryModel
+        {
+            Title = "Sharpnado.Tabs",
+            Description = "Pure Xamarin.Forms tabs:* Fixed tabs (android tabs style)  * Scrollable tabs* Vertical tabs* Material design tabs (top and leading icon)* Support for SVG images* Segmented tabs* Custom shadows (neumorphism ready)* Badges on tabs* Circle button in tab bar* Bottom bar tabs (ios tabs style)* Custom tabs (be creative just implement TabItem)* Independent ViewSwitcher* Bindable with ItemsSource",
+            ImageSource = "https://api.nuget.org/v3-flatcontainer/sharpnado.tabs/2.2.0/icon"
+        });
+
+        refreshView.IsRefreshing = false;
     }
 
     private async void HandleSelectionChanged(object? sender, SelectionChangedEventArgs e)
