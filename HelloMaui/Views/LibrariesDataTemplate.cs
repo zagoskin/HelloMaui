@@ -1,15 +1,16 @@
-﻿namespace HelloMaui;
-
-using CommunityToolkit.Maui.Markup;
+﻿using CommunityToolkit.Maui.Markup;
+using HelloMaui.Models;
 using static CommunityToolkit.Maui.Markup.GridRowsColumns;
-public class MauiLibrariesDataTemplate : DataTemplate
+
+namespace HelloMaui.Views;
+public class LibrariesDataTemplate : DataTemplate
 {
     const int ImageRadius = 25;
     const int ImagePadding = 8;
 
-    public MauiLibrariesDataTemplate() : base(CreateGridTemplate)
+    public LibrariesDataTemplate() : base(CreateGridTemplate)
     {
-        
+
     }
 
     private static Grid CreateGridTemplate() => new()
@@ -33,7 +34,7 @@ public class MauiLibrariesDataTemplate : DataTemplate
                 .Center()
                 .Aspect(Aspect.AspectFit)
                 .Size(ImageRadius * 2)
-                .Bind(Image.SourceProperty, 
+                .Bind(Image.SourceProperty,
                     getter: (LibraryModel model) => model.ImageSource,
                     mode: BindingMode.OneWay),
 
@@ -41,7 +42,7 @@ public class MauiLibrariesDataTemplate : DataTemplate
                 .Row(Row.Title)
                 .Column(Column.Text)
                 .Font(size: 18, bold: true)
-                .AppThemeColorBinding(Label.TextColorProperty, Color.FromArgb("#262626"), Color.FromArgb("#c9c9c9"))                
+                .AppThemeColorBinding(Label.TextColorProperty, Color.FromArgb("#262626"), Color.FromArgb("#c9c9c9"))
                 .TextTop()
                 .TextStart()
                 .Bind(Label.TextProperty,
@@ -52,7 +53,7 @@ public class MauiLibrariesDataTemplate : DataTemplate
                 .Row(Row.Description)
                 .Column(Column.Text)
                 .Font(size: 12)
-                .AppThemeColorBinding(Label.TextColorProperty, Color.FromArgb("#595959"), Color.FromArgb("#b6b6b6"))                
+                .AppThemeColorBinding(Label.TextColorProperty, Color.FromArgb("#595959"), Color.FromArgb("#b6b6b6"))
                 .TextTop()
                 .TextStart()
                 .Paddings(right: 12)
