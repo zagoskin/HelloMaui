@@ -87,24 +87,29 @@ public partial class ListViewModel : BaseViewModel
         CancellationTokenSource cts = new(TimeSpan.FromSeconds(10));
 
         var libraries = await _libraryModelDatabase.GetLibrariesAsync(cts.Token).ConfigureAwait(false);
+
         await using (var delay = new SimulatedDelay(_minimumRefreshTime, () => { IsRefreshing = false; IsSearchBarEnabled = true; }))
         {
-            if (libraries.Count is 0)
+            if (libraries.Count is not 0)
             {
-                await _mauiLibrariesService.GetLibrariesAsync(cts.Token)
-                    .ForEachAwaitWithCancellationAsync((item, ct) =>
-                    {
-                        if (MauiLibraries.Any(x => x.Title.Equals(item.Title, StringComparison.OrdinalIgnoreCase)))
-                        {
-                            return Task.CompletedTask;
-                        }
-                        return _dispatcher.DispatchAsync(() => MauiLibraries.Add(item));
-                    }, cts.Token)
-                    .ConfigureAwait(false);
-                await _libraryModelDatabase.InsertAllLibraries(MauiLibraries, cts.Token).ConfigureAwait(false);
+                return;
             }
-        }  
-    }
 
-    
+            await _mauiLibrariesService.GetLibrariesAsync(cts.Token)
+                .ForEachAwaitWithCancellationAsync(
+                    DispatchAddLibraryAsync, 
+                    cts.Token)
+                .ConfigureAwait(false);
+            await _libraryModelDatabase.InsertAllLibraries(MauiLibraries, cts.Token).ConfigureAwait(false);
+        }
+    }    
+
+    private Task DispatchAddLibraryAsync(LibraryModel item, CancellationToken token)
+    {
+        if (MauiLibraries.Any(x => x.Title.Equals(item.Title, StringComparison.OrdinalIgnoreCase)))
+        {
+            return Task.CompletedTask;
+        }
+        return _dispatcher.DispatchAsync(() => MauiLibraries.Add(item));
+    }
 }
