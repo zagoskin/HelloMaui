@@ -1,0 +1,9 @@
+query LibrariesQuery
+{
+	libraries 
+	{
+		title,
+		description,
+		imageSource
+	}
+}

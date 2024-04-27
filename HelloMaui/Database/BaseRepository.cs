@@ -1,6 +1,7 @@
 ﻿using Polly;
 using Polly.Retry;
 using SQLite;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HelloMaui.Database;
 public abstract class BaseRepository<TModel> where TModel : class, new()
@@ -19,7 +20,7 @@ public abstract class BaseRepository<TModel> where TModel : class, new()
     }
 
     protected async Task<TReturn> Execute<TReturn>(Func<SQLiteAsyncConnection, Task<TReturn>> action, CancellationToken token, int maxRetries = 10)
-    {
+    {   
         var connection = await GetDatabaseConnection().ConfigureAwait(false);
         var resiliencePipeline = new ResiliencePipelineBuilder<TReturn>()
             .AddRetry(new RetryStrategyOptions<TReturn>()

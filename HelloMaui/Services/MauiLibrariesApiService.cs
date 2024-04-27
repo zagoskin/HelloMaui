@@ -1,6 +1,7 @@
 ﻿using HelloMaui.Infrastructure.Refit;
 using HelloMaui.Models;
 using Refit;
+using System.Runtime.CompilerServices;
 
 namespace HelloMaui.Services;
 internal sealed class MauiLibrariesApiService : IMauiLibrariesService
@@ -12,20 +13,23 @@ internal sealed class MauiLibrariesApiService : IMauiLibrariesService
         _client = client;
     }
 
-    public async Task<List<LibraryModel>> GetLibrariesAsync(CancellationToken cancellationToken = default)
+    public async IAsyncEnumerable<LibraryModel> GetLibrariesAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
+        List<MauiLibraryResponse> libraries = [];
         try
         {
-            var libraries = await _client.GetMauiLibrariesAsync(cancellationToken).ConfigureAwait(false);
-            return libraries.ConvertAll(l => new LibraryModel(
-                l.Title,
-                l.Description,
-                l.ImageSource));
+            libraries = await _client.GetMauiLibrariesAsync(cancellationToken).ConfigureAwait(false);
         }
         catch (ApiException ex)
         {
             Console.WriteLine($"Error: {ex.Message}");
-            return [];
+        }
+        foreach (var lib in libraries)
+        {
+            yield return new LibraryModel(
+                lib.Title,
+                lib.Description,
+                lib.ImageSource);
         }
     }
 }

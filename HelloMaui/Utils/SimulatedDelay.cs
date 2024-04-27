@@ -4,7 +4,8 @@ public class SimulatedDelay : IAsyncDisposable, IDisposable
 {
     private bool _disposedValue;
     private readonly TimeSpan _delay;
-
+    private readonly object?[]? _args;
+    private readonly Delegate? _delegate;
     // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
     // ~SimulatedDelay()
     // {
@@ -12,9 +13,11 @@ public class SimulatedDelay : IAsyncDisposable, IDisposable
     //     Dispose(disposing: false);
     // }
 
-    public SimulatedDelay(TimeSpan delay)
+    public SimulatedDelay(TimeSpan delay, Delegate? @delegate = null, params object?[]? delegateArgs)
     {
         _delay = delay;
+        _delegate = @delegate;
+        _args = delegateArgs;
     }
 
     public async ValueTask DisposeAsync()
@@ -29,6 +32,7 @@ public class SimulatedDelay : IAsyncDisposable, IDisposable
     private async Task DisposeAsyncCore()
     {
         await Task.Delay(_delay).ConfigureAwait(false);
+        _delegate?.DynamicInvoke(_args);
     }
 
     protected virtual void Dispose(bool disposing)

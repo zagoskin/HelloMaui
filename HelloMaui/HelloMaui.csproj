@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net8.0-android;</TargetFrameworks>
 		<!--<TargetFrameworks>net8.0-android;net8.0-ios;net8.0-maccatalyst</TargetFrameworks>-->
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
+		<!--<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>-->
 		<!--<TargetFramework>net8.0-ios</TargetFramework>-->
 		
 		<OutputType>Exe</OutputType>
@@ -54,6 +54,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <GraphQL Remove="services\graphql\LibrariesQuery.graphql" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Include="Handlers\CalendarHandler.ios.cs" />
 	</ItemGroup>
 
@@ -70,6 +74,8 @@
 		<PackageReference Include="Refit.HttpClientFactory" Version="7.0.0" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
 		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.8" />
+		<PackageReference Include="StrawberryShake.Maui" Version="13.9.0" />
+		<PackageReference Include="System.Linq.Async" Version="6.0.1" />
 	</ItemGroup>
 
 </Project>

@@ -6,9 +6,7 @@ using HelloMaui.Pages;
 using HelloMaui.Services;
 using HelloMaui.Utils;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq.Expressions;
-using System.Net;
+using System.Linq;
 
 namespace HelloMaui.ViewModels;
 public partial class ListViewModel : BaseViewModel
@@ -89,34 +87,23 @@ public partial class ListViewModel : BaseViewModel
         CancellationTokenSource cts = new(TimeSpan.FromSeconds(10));
 
         var libraries = await _libraryModelDatabase.GetLibrariesAsync(cts.Token).ConfigureAwait(false);
-        await using (var delay = new SimulatedDelay(_minimumRefreshTime))
+        await using (var delay = new SimulatedDelay(_minimumRefreshTime, () => { IsRefreshing = false; IsSearchBarEnabled = true; }))
         {
             if (libraries.Count is 0)
             {
-                libraries = await _mauiLibrariesService.GetLibrariesAsync().ConfigureAwait(false);
-                await _libraryModelDatabase.InsertAllLibraries(libraries, cts.Token).ConfigureAwait(false);
+                await _mauiLibrariesService.GetLibrariesAsync(cts.Token)
+                    .ForEachAwaitWithCancellationAsync((item, ct) =>
+                    {
+                        if (MauiLibraries.Any(x => x.Title.Equals(item.Title, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            return Task.CompletedTask;
+                        }
+                        return _dispatcher.DispatchAsync(() => MauiLibraries.Add(item));
+                    }, cts.Token)
+                    .ConfigureAwait(false);
+                await _libraryModelDatabase.InsertAllLibraries(MauiLibraries, cts.Token).ConfigureAwait(false);
             }
-        }
-
-        foreach (var item in libraries)
-        {
-            if (MauiLibraries.Any(x => x.Title.Equals(item.Title, StringComparison.OrdinalIgnoreCase)))
-            {
-                continue;
-            }
-            await _dispatcher.DispatchAsync(() => MauiLibraries.Add(item)).ConfigureAwait(false);
-
-        }
-
-        //MauiLibraries.Clear();
-
-        //foreach (var item in libraries.Where(lib => !MauiLibraries.Any(x => x.Title.Equals(lib.Title, StringComparison.OrdinalIgnoreCase))))
-        //{
-        //    await _dispatcher.DispatchAsync(() => MauiLibraries.Add(item)).ConfigureAwait(false);
-        //}
-        IsRefreshing = false;
-        IsSearchBarEnabled = true;
-
+        }  
     }
 
     

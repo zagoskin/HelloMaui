@@ -5,6 +5,7 @@ using HelloMaui.Handlers;
 using HelloMaui.Infrastructure.Refit;
 using HelloMaui.Pages;
 using HelloMaui.Services;
+using HelloMaui.Services.GraphQL;
 using HelloMaui.ViewModels;
 using HelloMaui.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,16 +41,22 @@ public static class MauiProgram
         builder.Services
             .AddSingleton<AppShell>()
             .AddSingleton<App>()
-            .AddSingleton<IMauiLibrariesService, MauiLibrariesApiService>()
+            .AddSingleton<IMauiLibrariesService, MauiLibrariesGraphQLService>()
             .AddSingleton<WelcomePreferencesService>()
             .AddSingleton<IPreferences>(Preferences.Default)
             .AddSingleton<IFileSystem>(FileSystem.Current)
             .AddSingleton<LibraryModelRepository>(); 
 
         builder.Services.AddRefitClient<IMauiLibrariesClient>()
-            .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://6dhbgfw1de.execute-api.us-west-1.amazonaws.com"))
-            .AddStandardResilienceHandler(configure => configure.Retry = new MobileHttpRetryStrategyOptions());
-
+            .ConfigureHttpClient(
+                static c => c.BaseAddress = new Uri("https://6dhbgfw1de.execute-api.us-west-1.amazonaws.com"))
+            .AddStandardResilienceHandler(
+                static configure => configure.Retry = new MobileHttpRetryStrategyOptions());
+        builder.Services.AddLibrariesGraphql()
+            .ConfigureHttpClient(
+                static c => c.BaseAddress = new Uri("https://t41fbiwwda.execute-api.us-west-1.amazonaws.com/graphql/"),
+                static builder => builder.AddStandardResilienceHandler(configure => configure.Retry = new MobileHttpRetryStrategyOptions()));
+            
 
         builder.Services
             .AddTransient<ListPage>()
