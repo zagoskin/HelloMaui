@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Markup;
+using HelloMaui.Database;
 using HelloMaui.Handlers;
 using HelloMaui.Infrastructure.Refit;
 using HelloMaui.Pages;
@@ -36,19 +37,26 @@ public static class MauiProgram
 #if DEBUG
 		builder.Logging.AddDebug();
 #endif
-        builder.Services.AddSingleton<AppShell>();
-        builder.Services.AddSingleton<App>();
+        builder.Services
+            .AddSingleton<AppShell>()
+            .AddSingleton<App>()
+            .AddSingleton<IMauiLibrariesService, MauiLibrariesApiService>()
+            .AddSingleton<WelcomePreferencesService>()
+            .AddSingleton<IPreferences>(Preferences.Default)
+            .AddSingleton<IFileSystem>(FileSystem.Current)
+            .AddSingleton<LibraryModelRepository>(); 
+
         builder.Services.AddRefitClient<IMauiLibrariesClient>()
             .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://6dhbgfw1de.execute-api.us-west-1.amazonaws.com"))
             .AddStandardResilienceHandler(configure => configure.Retry = new MobileHttpRetryStrategyOptions());
-            
-        builder.Services.AddSingleton<IMauiLibrariesService, MauiLibrariesApiService>();
 
-        builder.Services.AddTransient<ListPage>();
-        builder.Services.AddTransient<ListViewModel>();
-        builder.Services.AddTransient<DetailsPage>();
-        builder.Services.AddTransient<DetailsViewModel>();
-        builder.Services.AddTransient<CalendarPage>();
+
+        builder.Services
+            .AddTransient<ListPage>()
+            .AddTransient<ListViewModel>()
+            .AddTransient<DetailsPage>()
+            .AddTransient<DetailsViewModel>()
+            .AddTransient<CalendarPage>();
 
         return builder.Build();
     }

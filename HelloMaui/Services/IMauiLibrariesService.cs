@@ -4,5 +4,5 @@ namespace HelloMaui.Services;
 
 public interface IMauiLibrariesService
 {
-    Task<List<LibraryModel>> GetLibrariesAsync();
+    Task<List<LibraryModel>> GetLibrariesAsync(CancellationToken cancellationToken = default);
 }

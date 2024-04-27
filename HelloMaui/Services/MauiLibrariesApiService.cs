@@ -12,11 +12,11 @@ internal sealed class MauiLibrariesApiService : IMauiLibrariesService
         _client = client;
     }
 
-    public async Task<List<LibraryModel>> GetLibrariesAsync()
+    public async Task<List<LibraryModel>> GetLibrariesAsync(CancellationToken cancellationToken = default)
     {
         try
         {
-            var libraries = await _client.GetMauiLibrariesAsync().ConfigureAwait(false);
+            var libraries = await _client.GetMauiLibrariesAsync(cancellationToken).ConfigureAwait(false);
             return libraries.ConvertAll(l => new LibraryModel(
                 l.Title,
                 l.Description,

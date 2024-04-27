@@ -36,8 +36,7 @@ public class LibrariesCollectionView : CollectionView
             .Center()
             .TextCenter();
 
-        SelectionMode = SelectionMode.Single;
-        
+        SelectionMode = SelectionMode.Single;        
     }
 }
         
